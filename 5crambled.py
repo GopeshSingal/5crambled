@@ -128,6 +128,7 @@ def main(page: ft.Page):
 
     def on_tap(e: ft.TapEvent):
         save_state()
+        reset_history()
         if state.fill:
             fill_canvas(e.local_x, e.local_y)
         else:
@@ -148,6 +149,9 @@ def main(page: ft.Page):
         else:
             current_state = [shape.paint.color for shape in cp.shapes]
             rhistory.append(current_state)
+
+    def reset_history():
+        rhistory.clear()
 
     def revert_state(e):
         save_state(False)

@@ -6,10 +6,7 @@ from login import login_page
 
 def main(page: ft.Page):
     page.title = "Pixels"
-    page.bgcolor = "#495da3"
-    # page.window.width = canvas_size + 16
-    # page.window.height = canvas_size + 32
-    # page.window.resizable = False
+    page.bgcolor = "#000000"
 
     def route_change(route):
         page.views.clear()

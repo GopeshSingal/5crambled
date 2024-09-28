@@ -12,8 +12,6 @@ class State:
     x: float
     y: float
     fill: bool
-      
-
 
 class Color_palette:
     def __init__(self):
@@ -61,6 +59,7 @@ class Color_palette:
 
 
 state = State()
+state.fill = False
 history = []
 rhistory = []
 color_picker = ColorPicker(color="#fff8e7")
@@ -68,47 +67,19 @@ color_picker = ColorPicker(color="#fff8e7")
 def home_page(page: ft.Page):
     def init_canvas():
         shapes = []
-
         for i in range(grid_size):
             for j in range(grid_size):
                 shapes.append(cv.Rect(j * ratio, i * ratio, ratio, ratio, paint=ft.Paint(color="#ffffff", stroke_width=2)))
         return shapes
 
-    # color picker code
-    color_palette = Color_palette()
-
-    color_col = ft.Container(
-        content=ft.Column(
-            [color_picker, color_palette.palette],
-            ft.MainAxisAlignment.CENTER
-        ),
-        bgcolor="#d8dae0",
-        border_radius=5,
-    )
-
-
     def upload_to_firebase(e):
-        data_array = []
-        for i in range(grid_size):
-            for j in range(grid_size):
-
-                data_array.append(cp.shapes[(int)(i + j * grid_size)].paint.color)
-        cloud_firebase.collection("images").add({"hex_array": data_array,
-                                                 "timestamp": firestore.SERVER_TIMESTAMP})
+        return
         
     def set_pixel(x, y):
         if x > -1 and x < 512 and y > -1 and y < 512:
             x = x // ratio
             y = y // ratio
             cp.shapes[(int)(x + y * grid_size)].paint.color = color_picker.color
-
-                data_array.append(cp.shapes[int(i + j * grid_size)].paint.color)
-        cloud_firestore.collection("images").add({"hex_array": data_array,
-                                                 "timestamp": firestore.SERVER_TIMESTAMP})
-
-
-
-
 
     def pan_start(e: ft.DragStartEvent):
         set_pixel(e.local_x, e.local_y)
@@ -118,7 +89,6 @@ def home_page(page: ft.Page):
         cp.update()
         state.x = (e.local_x // ratio)
         state.y = (e.local_y // ratio)
-
 
     def on_tap(e: ft.TapEvent):
         save_state()
@@ -193,6 +163,8 @@ def home_page(page: ft.Page):
                 frontier.append((cx, cy + 1))
                 frontier.append((cx, cy - 1))
 
+    color_palette = Color_palette()
+
     cp = cv.Canvas(init_canvas(),
         content=ft.GestureDetector(
             on_pan_start=pan_start,
@@ -201,7 +173,14 @@ def home_page(page: ft.Page):
             on_tap_down = on_tap,
         expand=False,)
     )
-
+    color_col = ft.Container(
+        content=ft.Column(
+            [color_picker, color_palette.palette],
+            ft.MainAxisAlignment.CENTER
+        ),
+        bgcolor="#d8dae0",
+        border_radius=5,
+    )
     row = ft.Row(
         [
             ft.Container(
@@ -225,7 +204,6 @@ def home_page(page: ft.Page):
             ft.Checkbox(label="Fill Mode", on_change=fill_checkbox_changed)
         ]
     )
-
     return [
             ft.AppBar(title=ft.Text("Home"), bgcolor=ft.colors.SURFACE_VARIANT, actions=[ft.ElevatedButton("Log out", on_click=lambda _: page.go("/"))],),
             row,

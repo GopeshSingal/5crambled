@@ -5,8 +5,9 @@ from login import login_page
 
 
 def main(page: ft.Page):
-    page.title = "Pixels"
+    page.title = "5crambled"
     page.bgcolor = "#000000"
+    page.window.maximized = True
 
     def route_change(route):
         page.views.clear()

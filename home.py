@@ -11,6 +11,9 @@ ratio = canvas_size / grid_size
 class State:
     x: float
     y: float
+    fill: bool
+      
+
 
 class Color_palette:
     def __init__(self):
@@ -63,10 +66,9 @@ rhistory = []
 color_picker = ColorPicker(color="#fff8e7")
 
 def home_page(page: ft.Page):
-
     def init_canvas():
         shapes = []
-        state.fill = False
+
         for i in range(grid_size):
             for j in range(grid_size):
                 shapes.append(cv.Rect(j * ratio, i * ratio, ratio, ratio, paint=ft.Paint(color="#ffffff", stroke_width=2)))
@@ -84,10 +86,12 @@ def home_page(page: ft.Page):
         border_radius=5,
     )
 
+
     def upload_to_firebase(e):
         data_array = []
         for i in range(grid_size):
             for j in range(grid_size):
+
                 data_array.append(cp.shapes[(int)(i + j * grid_size)].paint.color)
         cloud_firebase.collection("images").add({"hex_array": data_array,
                                                  "timestamp": firestore.SERVER_TIMESTAMP})
@@ -98,6 +102,13 @@ def home_page(page: ft.Page):
             y = y // ratio
             cp.shapes[(int)(x + y * grid_size)].paint.color = color_picker.color
 
+                data_array.append(cp.shapes[int(i + j * grid_size)].paint.color)
+        cloud_firestore.collection("images").add({"hex_array": data_array,
+                                                 "timestamp": firestore.SERVER_TIMESTAMP})
+
+
+
+
 
     def pan_start(e: ft.DragStartEvent):
         set_pixel(e.local_x, e.local_y)
@@ -107,6 +118,7 @@ def home_page(page: ft.Page):
         cp.update()
         state.x = (e.local_x // ratio)
         state.y = (e.local_y // ratio)
+
 
     def on_tap(e: ft.TapEvent):
         save_state()
@@ -189,6 +201,7 @@ def home_page(page: ft.Page):
             on_tap_down = on_tap,
         expand=False,)
     )
+
     row = ft.Row(
         [
             ft.Container(
@@ -199,17 +212,20 @@ def home_page(page: ft.Page):
                 expand=False,
             ),
             color_col,
+
         ]
     )
     button_row = ft.Row(
         [
             ft.ElevatedButton(text="Reset", on_click=reset_canvas),
+
             ft.ElevatedButton(text="Upload", on_click=upload_to_firebase),
             ft.ElevatedButton(text="Undo", on_click=revert_state),
             ft.ElevatedButton(text="Redo", on_click=unrevert_state),
             ft.Checkbox(label="Fill Mode", on_change=fill_checkbox_changed)
         ]
     )
+
     return [
             ft.AppBar(title=ft.Text("Home"), bgcolor=ft.colors.SURFACE_VARIANT, actions=[ft.ElevatedButton("Log out", on_click=lambda _: page.go("/"))],),
             row,

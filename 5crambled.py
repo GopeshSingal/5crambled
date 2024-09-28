@@ -86,9 +86,13 @@ def main(page: ft.Page):
     # color picker code
     color_palette = Color_palette()
 
-    color_col = ft.Column(
-        [color_picker, color_palette.palette],
-        ft.MainAxisAlignment.CENTER
+    color_col = ft.Container(
+        content=ft.Column(
+            [color_picker, color_palette.palette],
+            ft.MainAxisAlignment.CENTER
+        ),
+        bgcolor="#d8dae0",
+        border_radius=5,
     )
     def upload():
         return

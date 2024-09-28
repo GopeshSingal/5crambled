@@ -22,14 +22,13 @@ class State:
 
 
 state = State()
+history = []
+rhistory = []
 
 
 def main(page: ft.Page):
     page.title = "Pixels"
     page.bgcolor = "#495da3"
-    # page.window.width = canvas_size + 16
-    # page.window.height = canvas_size + 32
-    # page.window.resizable = False
 
     def init_canvas():
         shapes = []
@@ -63,6 +62,7 @@ def main(page: ft.Page):
 
 
     def pan_start(e: ft.DragStartEvent):
+        print("pan start")
         set_pixel(e.local_x, e.local_y)
 
     def pan_update(e: ft.DragUpdateEvent):
@@ -71,14 +71,43 @@ def main(page: ft.Page):
         state.x = (e.local_x // ratio)
         state.y = (e.local_y // ratio)
     def on_tap(e: ft.TapEvent):
+        print("on tap")
+        save_state()
         set_pixel(e.local_x, e.local_y)
         cp.update()
         
     def reset_canvas(e, color="#ffffff"):
+        save_state()
         for i in range(grid_size):
             for j in range(grid_size):
                 cp.shapes[(int)(i + j * grid_size)].paint.color = color
         page.update()
+
+    def save_state(do=True):
+        print("Saved!")
+        if do:
+            current_state = [shape.paint.color for shape in cp.shapes]
+            history.append(current_state)
+        else:
+            current_state = [shape.paint.color for shape in cp.shapes]
+            rhistory.append(current_state)
+
+    def revert_state(e):
+        save_state(False)
+        if history:
+            old_state = history.pop()
+            for i, shape in enumerate(cp.shapes):
+                shape.paint.color = old_state[i]
+            cp.update()
+    
+    def unrevert_state(e):
+        save_state()
+        if rhistory:
+            old_state = rhistory.pop()
+            for i, shape in enumerate(cp.shapes):
+                shape.paint.color = old_state[i]
+            cp.update()
+            
 
     cp = cv.Canvas(init_canvas(),
         content=ft.GestureDetector(
@@ -104,7 +133,9 @@ def main(page: ft.Page):
         [
             ft.ElevatedButton(text="Reset", on_click=reset_canvas),
             ft.ElevatedButton(text="Fill", on_click= lambda x: reset_canvas(x, color=color_picker.color)),
-            ft.ElevatedButton(text="Upload", on_click=upload_to_firebase)
+            ft.ElevatedButton(text="Upload", on_click=upload_to_firebase),
+            ft.ElevatedButton(text="Undo", on_click=revert_state),
+            ft.ElevatedButton(text="Redo", on_click=unrevert_state)
         ]
     )
     page.add(

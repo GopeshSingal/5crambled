@@ -186,17 +186,47 @@ def home_page(page: ft.Page):
             on_pan_update=pan_update,
             drag_interval=10,
             on_tap_down = on_tap,
-        expand=False,)
+        expand=False,
+        )
     )
+
     color_col = ft.Container(
         content=ft.Column(
             [color_picker, color_palette.palette],
             ft.MainAxisAlignment.CENTER
         ),
         bgcolor="#d8dae0",
-        border_radius=5,
+        border_radius=5, 
+        height = canvas_size
     )
-    row = ft.Row(
+
+    button_row = ft.Row(
+        [
+            ft.ElevatedButton(
+                text="Reset", 
+                on_click=reset_canvas, 
+                style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10))
+            ),
+            ft.ElevatedButton(
+                text="Upload", 
+                on_click=upload_to_firebase, 
+                style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10))
+            ),
+            ft.ElevatedButton(
+                text="Undo", 
+                on_click=revert_state, 
+                style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10))
+            ),
+            ft.ElevatedButton(
+                text="Redo", 
+                on_click=unrevert_state, 
+                style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10))
+            ),
+            ft.Checkbox(label="Fill Mode", on_change=fill_checkbox_changed)
+        ]
+    )
+
+    column = ft.Column(
         [
             ft.Container(
                 cp,
@@ -205,22 +235,29 @@ def home_page(page: ft.Page):
                 height=canvas_size,
                 expand=False,
             ),
-            color_col,
-
-        ]
+            button_row,
+        ], 
+        alignment=ft.MainAxisAlignment.CENTER, 
+        horizontal_alignment = ft.CrossAxisAlignment.CENTER
     )
-    button_row = ft.Row(
-        [
-            ft.ElevatedButton(text="Reset", on_click=reset_canvas),
 
-            ft.ElevatedButton(text="Upload", on_click=upload_to_firebase),
-            ft.ElevatedButton(text="Undo", on_click=revert_state),
-            ft.ElevatedButton(text="Redo", on_click=unrevert_state),
-            ft.Checkbox(label="Fill Mode", on_change=fill_checkbox_changed)
-        ]
+    container = ft.Container(
+        content=ft.Row(
+            [column, color_col],
+            alignment=ft.MainAxisAlignment.CENTER, 
+            vertical_alignment = ft.CrossAxisAlignment.START, 
+            expand = True
+        ),
     )
+
+    main_col = ft.Column(
+        [container], 
+        alignment=ft.MainAxisAlignment.CENTER, 
+        horizontal_alignment = ft.CrossAxisAlignment.CENTER, 
+        expand = True
+    )
+
     return [
             ft.AppBar(title=ft.Text("Home"), bgcolor=ft.colors.SURFACE_VARIANT, actions=[ft.ElevatedButton("Log out", on_click=lambda _: page.go("/"))],),
-            row,
-            button_row
+            main_col
         ]

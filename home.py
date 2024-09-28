@@ -14,9 +14,10 @@ class State:
     fill: bool
 
 class Color_palette:
-    def __init__(self):
+    def __init__(self, page):
         palette = []
-
+        self.prev_button = None
+        self.page = page
         # base colors: white, black, red, orange, green, blue, purple
         self.base_colors = ["#ffffff", "#000000", "#ff0000", "#ffa500", "#008000", "#0000ff", "#7D0DC3"]
 
@@ -30,32 +31,46 @@ class Color_palette:
                     # tooltip="Pause record",
                 )
             )
-        
-        # create button to select pick or save
-        # pick: use the selected color
-        # save: reset the button color to the current color
-        self.select_group = ft.RadioGroup(content=ft.Row([
-        ft.Radio(value="pick", label="Pick"),
-        ft.Radio(value="save", label="Save")]),
-        value="pick")
 
         self.palette = ft.Column(
-            [
-                ft.Row(palette),
-                self.select_group
-            ],
+            [ft.Row(palette)],
             horizontal_alignment=ft.CrossAxisAlignment.CENTER
         )
 
     # Changes the paint color to the button color if "pick"
     # Otherwise resets the button color to the current color
     def select_color(self, e):
-        if self.select_group.value == "pick":
+        if self.prev_button != e.control: # picking new button
+            if self.prev_button:
+                self.prev_button.selected=False
+            self.prev_button=e.control
+            e.control.selected=True
+            e.control.focus()
+            e.control.update()
             color_picker.color=e.control.icon_color
             color_picker.update()
         else:
-            e.control.icon_color=color_picker.color
-            e.control.update()
+            button = e.control
+            def save_color(e):
+                if e.control.text == "Yes":
+                    button.icon_color=color_picker.color
+                    button.update()
+                dlg_modal.open=False
+                self.page.update()
+            
+            dlg_modal = ft.AlertDialog(
+                modal=True,
+                title=ft.Text("Please confirm"),
+                content=ft.Text("Save color?"),
+                actions=[
+                    ft.TextButton("Yes", on_click=save_color),
+                    ft.TextButton("No", on_click=save_color),
+                ],
+                actions_alignment=ft.MainAxisAlignment.END,
+            )
+            self.page.views[-1].controls.append(dlg_modal)
+            dlg_modal.open=True
+            self.page.update()
 
 
 state = State()
@@ -163,7 +178,7 @@ def home_page(page: ft.Page):
                 frontier.append((cx, cy + 1))
                 frontier.append((cx, cy - 1))
 
-    color_palette = Color_palette()
+    color_palette = Color_palette(page)
 
     cp = cv.Canvas(init_canvas(),
         content=ft.GestureDetector(

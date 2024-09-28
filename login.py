@@ -1,9 +1,8 @@
 import flet as ft
 import requests
-from firebase import firebase
-from firebase_admin import auth
 from firebase_utils import firebase_auth_url_template
 
+button_style = ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10))
 
 def login_page(page: ft.Page):
     email_field = ft.TextField(label='Email', width=300)
@@ -32,8 +31,16 @@ def login_page(page: ft.Page):
         if response.ok:
             page.go('/home')
 
-    login_button = ft.ElevatedButton(text='Login', on_click=lambda _: login(email_field.value, password_field.value))
-    sign_up_button = ft.ElevatedButton(text='Sign up', on_click=lambda _: sign_up(email_field.value, password_field.value))
+    login_button = ft.ElevatedButton(
+        text='Login',
+        on_click=lambda _: login(email_field.value, password_field.value),
+        style=button_style)
+    sign_up_button = ft.ElevatedButton(
+        text='Sign up',
+        on_click=lambda _: sign_up(email_field.value, password_field.value),
+        style=button_style
+    )
+
     input_row = ft.Row(
         [
             ft.Column(

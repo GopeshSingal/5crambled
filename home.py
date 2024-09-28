@@ -1,12 +1,12 @@
 import flet as ft
 import flet.canvas as cv
-from firebase_admin import firestore
 from flet_contrib.color_picker import ColorPicker
-from firebase_utils import cloud_firestore
 
 canvas_size = 512
 grid_size = 32
 ratio = canvas_size / grid_size
+
+button_style = ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10))
 
 class State:
     x: float
@@ -205,22 +205,22 @@ def home_page(page: ft.Page):
             ft.ElevatedButton(
                 text="Reset", 
                 on_click=reset_canvas, 
-                style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10))
+                style=button_style
             ),
             ft.ElevatedButton(
                 text="Upload", 
                 on_click=upload_to_firebase, 
-                style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10))
+                style=button_style
             ),
             ft.ElevatedButton(
                 text="Undo", 
                 on_click=revert_state, 
-                style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10))
+                style=button_style
             ),
             ft.ElevatedButton(
                 text="Redo", 
                 on_click=unrevert_state, 
-                style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10))
+                style=button_style
             ),
             ft.Checkbox(label="Fill Mode", on_change=fill_checkbox_changed)
         ]

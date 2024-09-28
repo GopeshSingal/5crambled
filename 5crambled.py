@@ -14,6 +14,12 @@ canvas_size = 512
 grid_size = 32
 ratio = canvas_size / grid_size 
 color = ft.colors.BLACK
+color_picker = ColorPicker(color="#fff8e7")
+background = cv.Fill(
+                ft.Paint(
+                    "#ffffff"
+                )
+            )
 
 
 class State:
@@ -26,6 +32,52 @@ history = []
 rhistory = []
 
 
+class Color_palette:
+    def __init__(self):
+        palette = []
+
+        # base colors: white, black, red, orange, green, blue, purple
+        self.base_colors = ["#ffffff", "#000000", "#ff0000", "#ffa500", "#008000", "#0000ff", "#7D0DC3"]
+
+        for i in range(7):
+            palette.append(
+                ft.IconButton(
+                    icon=ft.icons.SQUARE_ROUNDED,
+                    icon_color=self.base_colors[i],
+                    icon_size=20,
+                    on_click=self.select_color
+                    # tooltip="Pause record",
+                )
+            )
+        
+        # create button to select pick or save
+        # pick: use the selected color
+        # save: reset the button color to the current color
+        self.select_group = ft.RadioGroup(content=ft.Row([
+        ft.Radio(value="pick", label="Pick"),
+        ft.Radio(value="save", label="Save")]),
+        value="pick")
+
+        self.palette = ft.Column(
+            [
+                ft.Row(palette),
+                self.select_group
+            ],
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER
+        )
+
+    # Changes the paint color to the button color if "pick"
+    # Otherwise resets the button color to the current color
+    def select_color(self, e):
+        if self.select_group.value == "pick":
+            color_picker.color=e.control.icon_color
+            color_picker.update()
+        else:
+            e.control.icon_color=color_picker.color
+            e.control.update()
+
+
+        
 def main(page: ft.Page):
     page.title = "Pixels"
     page.bgcolor = "#495da3"
@@ -39,7 +91,16 @@ def main(page: ft.Page):
         return shapes
 
     # color picker code
-    color_picker = ColorPicker(color="#fff8e7")
+    color_palette = Color_palette()
+
+    color_col = ft.Container(
+        content=ft.Column(
+            [color_picker, color_palette.palette],
+            ft.MainAxisAlignment.CENTER
+        ),
+        bgcolor="#d8dae0",
+        border_radius=5,
+    )
 
     def upload_to_firebase(e):
         data_array = []
@@ -48,7 +109,7 @@ def main(page: ft.Page):
                 data_array.append(cp.shapes[(int)(i + j * grid_size)].paint.color)
         cloud_firebase.collection("images").add({"hex_array": data_array,
                                                  "timestamp": firestore.SERVER_TIMESTAMP})
-  
+        
     def set_pixel(x, y):
         if x > -1 and x < 512 and y > -1 and y < 512:
             x = x // ratio
@@ -151,7 +212,7 @@ def main(page: ft.Page):
                 height=canvas_size,
                 expand=False,
             ),
-            color_picker,
+            color_col,
         ]
     )
     button_row = ft.Row(

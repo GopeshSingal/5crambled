@@ -1,10 +1,17 @@
+import firebase_admin.firestore
 import flet as ft
 import flet.canvas as cv
-
+import firebase_admin
+from firebase_admin import credentials, firestore
 from flet_contrib.color_picker import ColorPicker
+import uuid
+
+cred = credentials.Certificate("./secrets.json")
+firebase_admin.initialize_app(cred)
+cloud_firebase = firestore.client()
 
 canvas_size = 512
-grid_size = 16
+grid_size = 32
 ratio = canvas_size / grid_size 
 color = ft.colors.BLACK
 
@@ -18,7 +25,7 @@ state = State()
 
 
 def main(page: ft.Page):
-    page.title = "Flet Brush"
+    page.title = "Pixels"
     page.bgcolor = "#495da3"
     # page.window.width = canvas_size + 16
     # page.window.height = canvas_size + 32
@@ -39,8 +46,13 @@ def main(page: ft.Page):
         color_picker.color = new_color.value
         color_picker.update()
 
-    def upload():
-        return
+    def upload_to_firebase(e):
+        data_array = []
+        for i in range(grid_size):
+            for j in range(grid_size):
+                data_array.append(cp.shapes[(int)(i + j * grid_size)].paint.color)
+        cloud_firebase.collection("images").add({"hex_array": data_array,
+                                                 "timestamp": firestore.SERVER_TIMESTAMP})
 
     
     def set_pixel(x, y):
@@ -74,8 +86,7 @@ def main(page: ft.Page):
             on_pan_update=pan_update,
             drag_interval=10,
             on_tap_down = on_tap,
-        expand=False,
-    )
+        expand=False,)
     )
     row = ft.Row(
         [
@@ -89,15 +100,13 @@ def main(page: ft.Page):
             color_picker,
         ]
     )
-
     button_row = ft.Row(
         [
             ft.ElevatedButton(text="Reset", on_click=reset_canvas),
             ft.ElevatedButton(text="Fill", on_click= lambda x: reset_canvas(x, color=color_picker.color)),
-            ft.ElevatedButton(text="Upload", on_click=upload)
+            ft.ElevatedButton(text="Upload", on_click=upload_to_firebase)
         ]
     )
-
     page.add(
         row,
         button_row

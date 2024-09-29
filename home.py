@@ -8,10 +8,13 @@ canvas_size = 512
 grid_size = 32
 ratio = canvas_size / grid_size
 
+button_style = ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10))
+
 class State:
     x: float
     y: float
     fill: bool
+    dropper: bool
 
 class Color_palette:
     def __init__(self, page):
@@ -75,6 +78,7 @@ class Color_palette:
 
 state = State()
 state.fill = False
+state.dropper = False
 history = []
 rhistory = []
 color_picker = ColorPicker(color="#fff8e7")
@@ -88,10 +92,15 @@ def home_page(page: ft.Page):
         return shapes
 
     def upload_to_firebase(e):
-        return
+        data_array = []
+        for i in range(grid_size):
+            for j in range(grid_size):
+                data_array.append(cp.shapes[(int)(i + j * grid_size)].paint.color)
+            cloud_firestore.collection("images").add({"hex_array": data_array,
+                                             "timestamp": firestore.SERVER_TIMESTAMP})
         
     def set_pixel(x, y):
-        if x > -1 and x < 512 and y > -1 and y < 512:
+        if -1 < x < 512 and -1 < y < 512:
             x = x // ratio
             y = y // ratio
             cp.shapes[(int)(x + y * grid_size)].paint.color = color_picker.color
@@ -106,6 +115,12 @@ def home_page(page: ft.Page):
         state.y = (e.local_y // ratio)
 
     def on_tap(e: ft.TapEvent):
+        if state.dropper:
+            i = e.local_x // ratio
+            j = e.local_y // ratio
+            color_picker.color = cp.shapes[(int)(i + j * grid_size)].paint.color
+            color_picker.update()
+            return
         save_state()
         reset_history()
         if state.fill:
@@ -154,6 +169,12 @@ def home_page(page: ft.Page):
         else:
             state.fill = True
     
+    def dropper_checkbox_changed(e):
+        if state.dropper:
+            state.dropper = False
+        else:
+            state.dropper = True
+
     def is_valid(x, y):
         return 0 <= x < grid_size and 0 <= y < grid_size
 
@@ -205,24 +226,25 @@ def home_page(page: ft.Page):
             ft.ElevatedButton(
                 text="Reset", 
                 on_click=reset_canvas, 
-                style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10))
+                style=button_style
             ),
             ft.ElevatedButton(
                 text="Upload", 
                 on_click=upload_to_firebase, 
-                style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10))
+                style=button_style
             ),
             ft.ElevatedButton(
                 text="Undo", 
                 on_click=revert_state, 
-                style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10))
+                style=button_style
             ),
             ft.ElevatedButton(
                 text="Redo", 
                 on_click=unrevert_state, 
-                style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10))
+                style=button_style
             ),
-            ft.Checkbox(label="Fill Mode", on_change=fill_checkbox_changed)
+            ft.Checkbox(label="Fill Mode", on_change=fill_checkbox_changed),
+            ft.Checkbox(label="Dropper", on_change=dropper_checkbox_changed)
         ]
     )
 

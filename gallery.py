@@ -6,12 +6,14 @@ from firebase_utils import cloud_firestore
 from PIL import Image
 
 import os
+import shutil
 
 directory = '../images'
 def get_images():
     path = os.path.abspath(directory)
-    if not os.path.exists(path):
-        os.makedirs(path)
+    if os.path.exists(path):
+        shutil.rmtree(path)
+    os.mkdir(path)
 
     doc_ref = cloud_firestore.collection("users").document("anonymous")
     image_ref = doc_ref.collection("images").stream()

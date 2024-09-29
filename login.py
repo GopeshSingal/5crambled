@@ -82,7 +82,13 @@ def login_page(page: ft.Page):
         alignment=ft.MainAxisAlignment.CENTER,
         expand=True
     )
-
+    login_button = ft.ElevatedButton(text='Login', on_click=login)
+    
+    buttons = [
+        ft.ElevatedButton("Go to canvas", on_click=lambda _: page.go("/home")),
+        ft.ElevatedButton("See Gallery", on_click=lambda _: page.go("/works"))
+    ]
+    
     return [
         ft.AppBar(
             title=ft.Text("Login"),

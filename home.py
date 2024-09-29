@@ -306,6 +306,11 @@ def home_page(page: ft.Page, uid: str):
         expand = True
     )
 
+    buttons = [
+        ft.ElevatedButton("Go to canvas", on_click=lambda _: page.go("/home")),
+        ft.ElevatedButton("See Gallery", on_click=lambda _: page.go("/works"))
+    ]
+
     return [
             ft.AppBar(
                 leading=ft.Container(), 

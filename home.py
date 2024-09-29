@@ -96,7 +96,8 @@ def home_page(page: ft.Page):
         for i in range(grid_size):
             for j in range(grid_size):
                 data_array.append(cp.shapes[(int)(i + j * grid_size)].paint.color)
-            cloud_firestore.collection("images").add({"hex_array": data_array,
+        
+        cloud_firestore.collection("images").add({"hex_array": data_array,
                                              "timestamp": firestore.SERVER_TIMESTAMP})
         
     def set_pixel(x, y):

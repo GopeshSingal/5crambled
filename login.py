@@ -18,18 +18,35 @@ def login_page(page: ft.Page):
         request_body = {"email":email, "password": password, "returnSecureToken":True}
         response = firebase_post(login_endpoint, request_body)
         body = response.json()
-        print(body)
+
         if response.ok:
             page.go('/home')
+        elif response.status_code == 400:
+            error_message = body['error']['message']
+            if 'EMAIL' in error_message:
+                email_field.error_text = body['error']['message']
+                email_field.update()
+            else:
+                password_field.error_text = body['error']['message']
+                password_field.update()
+
 
     def sign_up(email, password):
         signup_endpoint = 'accounts:signUp'
         request_body = {"email":email, "password": password, "returnSecureToken":True}
         response = firebase_post(signup_endpoint, request_body)
         body = response.json()
-        print(body)
+
         if response.ok:
             page.go('/home')
+        elif response.status_code == 400:
+            error_message = body['error']['message']
+            if 'EMAIL' in error_message:
+                email_field.error_text = body['error']['message']
+                email_field.update()
+            else:
+                password_field.error_text = body['error']['message']
+                password_field.update()
 
     login_button = ft.ElevatedButton(
         text='Login',

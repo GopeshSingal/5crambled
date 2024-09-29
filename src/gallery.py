@@ -22,14 +22,19 @@ def get_images(uid):
         count += 1
         image = doc.to_dict()
         data = image["hex_array"]
-        visualize_output_from_data(data, count)
+        visualize_output_from_data(data, count, uid)
 
-def visualize_output_from_data(data, num):
+def visualize_output_from_data(data, num, uid):
     hex_array = data
     rgb_array = [(int(hex_color[1:3], 16), int(hex_color[3:5], 16), int(hex_color[5:7], 16)) for hex_color in hex_array]
     image = Image.new("RGB", (32, 32))
     image.putdata(rgb_array)
-    image.save(f'{directory}/output{num}.png')
+    image.save(f'{directory}/output_{uid}_{num}.png')
+
+def remove_local():
+    path = os.path.abspath(directory)
+    if os.path.exists(path):
+        shutil.rmtree(path)
 
 button_style = ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10))
 
@@ -42,9 +47,10 @@ def gallery_page(page: ft.Page, uid: str):
         spacing=5,
         run_spacing=5,
     )
-
+    
     for filename in os.listdir(directory):
         if "output" in filename:
+            print(f'{directory}/{filename}', uid)
             images.controls.append(
                 ft.Image(
                     src=os.path.abspath(f'{directory}/{filename}'),
@@ -53,12 +59,13 @@ def gallery_page(page: ft.Page, uid: str):
                     border_radius=ft.border_radius.all(10),
                 )
             )
-        page.update()
+        # page.update()
 
     buttons = [
         ft.ElevatedButton("Log out", on_click=lambda _: page.go("/",), style=button_style),
         ft.ElevatedButton("Go to canvas", on_click=lambda _: page.go("/home", uid=uid), style=button_style),
     ]
+    print(images.controls)
     return [
             ft.AppBar(
                 leading=ft.Container(), 

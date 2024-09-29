@@ -20,7 +20,8 @@ def login_page(page: ft.Page):
         body = response.json()
 
         if response.ok:
-            page.go('/home')
+            uid = body['localId']
+            page.go('/home', uid=uid)
         elif response.status_code == 400:
             error_message = body['error']['message']
             if 'EMAIL' in error_message:
@@ -33,12 +34,13 @@ def login_page(page: ft.Page):
 
     def sign_up(email, password):
         signup_endpoint = 'accounts:signUp'
-        request_body = {"email":email, "password": password, "returnSecureToken":True}
+        request_body = {"email":email, "password": password, "returnSecureToken": True}
         response = firebase_post(signup_endpoint, request_body)
         body = response.json()
 
         if response.ok:
-            page.go('/home')
+            uid = body['localId']
+            page.go('/home', uid=uid)
         elif response.status_code == 400:
             error_message = body['error']['message']
             if 'EMAIL' in error_message:

@@ -3,6 +3,7 @@ import flet.canvas as cv
 from firebase_admin import firestore
 from flet_contrib.color_picker import ColorPicker
 from firebase_utils import cloud_firestore
+from datetime import datetime
 
 canvas_size = 512
 grid_size = 32
@@ -81,7 +82,7 @@ history = []
 rhistory = []
 color_picker = ColorPicker(color="#fff8e7")
 
-def home_page(page: ft.Page):
+def home_page(page: ft.Page, uid: str):
     def init_canvas():
         shapes = []
         for i in range(grid_size):
@@ -93,10 +94,10 @@ def home_page(page: ft.Page):
         data_array = []
         for i in range(grid_size):
             for j in range(grid_size):
-                data_array.append(cp.shapes[(int)(i + j * grid_size)].paint.color)
-            cloud_firestore.collection("images").add({"hex_array": data_array,
-                                             "timestamp": firestore.SERVER_TIMESTAMP})
-        
+                data_array.append(cp.shapes[(int)(j + i * grid_size)].paint.color)
+
+        cloud_firestore.collection("users").document(uid).collection('images').document(datetime.now().isoformat()).set({"hex_array": data_array,
+                                         "timestamp": firestore.SERVER_TIMESTAMP})
     def set_pixel(x, y):
         if -1 < x < 512 and -1 < y < 512:
             x = x // ratio

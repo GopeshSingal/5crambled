@@ -14,6 +14,7 @@ class State:
     x: float
     y: float
     fill: bool
+    dropper: bool
 
 class Color_palette:
     def __init__(self, page):
@@ -77,6 +78,7 @@ class Color_palette:
 
 state = State()
 state.fill = False
+state.dropper = False
 history = []
 rhistory = []
 color_picker = ColorPicker(color="#fff8e7")
@@ -113,6 +115,12 @@ def home_page(page: ft.Page):
         state.y = (e.local_y // ratio)
 
     def on_tap(e: ft.TapEvent):
+        if state.dropper:
+            i = e.local_x // ratio
+            j = e.local_y // ratio
+            color_picker.color = cp.shapes[(int)(i + j * grid_size)].paint.color
+            color_picker.update()
+            return
         save_state()
         reset_history()
         if state.fill:
@@ -161,6 +169,12 @@ def home_page(page: ft.Page):
         else:
             state.fill = True
     
+    def dropper_checkbox_changed(e):
+        if state.dropper:
+            state.dropper = False
+        else:
+            state.dropper = True
+
     def is_valid(x, y):
         return 0 <= x < grid_size and 0 <= y < grid_size
 
@@ -229,7 +243,8 @@ def home_page(page: ft.Page):
                 on_click=unrevert_state, 
                 style=button_style
             ),
-            ft.Checkbox(label="Fill Mode", on_change=fill_checkbox_changed)
+            ft.Checkbox(label="Fill Mode", on_change=fill_checkbox_changed),
+            ft.Checkbox(label="Dropper", on_change=dropper_checkbox_changed)
         ]
     )
 

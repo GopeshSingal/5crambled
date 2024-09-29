@@ -1,6 +1,8 @@
 import flet as ft
 import flet.canvas as cv
+from firebase_admin import firestore
 from flet_contrib.color_picker import ColorPicker
+from firebase_utils import cloud_firestore
 
 canvas_size = 512
 grid_size = 32
@@ -88,10 +90,15 @@ def home_page(page: ft.Page):
         return shapes
 
     def upload_to_firebase(e):
-        return
+        data_array = []
+        for i in range(grid_size):
+            for j in range(grid_size):
+                data_array.append(cp.shapes[(int)(i + j * grid_size)].paint.color)
+            cloud_firestore.collection("images").add({"hex_array": data_array,
+                                             "timestamp": firestore.SERVER_TIMESTAMP})
         
     def set_pixel(x, y):
-        if x > -1 and x < 512 and y > -1 and y < 512:
+        if -1 < x < 512 and -1 < y < 512:
             x = x // ratio
             y = y // ratio
             cp.shapes[(int)(x + y * grid_size)].paint.color = color_picker.color

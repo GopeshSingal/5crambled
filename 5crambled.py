@@ -8,6 +8,7 @@ def main(page: ft.Page):
     page.title = "5crambled"
     page.bgcolor = "#000000"
     page.window.maximized = True
+    page.theme_mode = ft.ThemeMode.LIGHT
 
     def route_change(route):
         url = urlparse(route.data)

@@ -234,25 +234,25 @@ def home_page(page: ft.Page, uid: str):
         [
             ft.IconButton(
                 icon=ft.icons.FORMAT_COLOR_RESET_ROUNDED,
-                icon_color="blue_700",
+                icon_color=ft.colors.BLUE_GREY_500,
                 icon_size=20, 
                 on_click=reset_canvas, 
             ),
             ft.IconButton(
                 icon=ft.icons.CLOUD_UPLOAD_ROUNDED,
-                icon_color="blue_700",
+                icon_color=ft.colors.BLUE_GREY_500,
                 icon_size=20, 
                 on_click=upload_to_firebase, 
             ),
             ft.IconButton(
                 icon=ft.icons.UNDO_ROUNDED,
-                icon_color="blue_700",
+                icon_color=ft.colors.BLUE_GREY_500,
                 icon_size=20, 
                 on_click=revert_state, 
             ),
             ft.IconButton(
                 icon=ft.icons.REDO_ROUNDED,
-                icon_color="blue_700",
+                icon_color=ft.colors.BLUE_GREY_500,
                 icon_size=20, 
                 on_click=unrevert_state, 
             ),
@@ -262,7 +262,7 @@ def home_page(page: ft.Page, uid: str):
                 icon_size=20, 
                 on_click=fill_button_clicked, 
                 selected=False,
-                style=ft.ButtonStyle(color={"selected": ft.colors.BLUE_200, "": ft.colors.BLUE_900})
+                style=ft.ButtonStyle(color={"selected": ft.colors.BLUE_300, "": ft.colors.BLUE_GREY_500})
             ),
             ft.IconButton(
                 icon=ft.icons.COLORIZE_ROUNDED, 
@@ -270,7 +270,7 @@ def home_page(page: ft.Page, uid: str):
                 icon_size=20, 
                 on_click=dropper_button_clicked, 
                 selected=False,
-                style=ft.ButtonStyle(color={"selected": ft.colors.BLUE_200, "": ft.colors.BLUE_900})
+                style=ft.ButtonStyle(color={"selected": ft.colors.BLUE_300, "": ft.colors.BLUE_GREY_500})
             )
         ]
     )

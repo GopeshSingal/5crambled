@@ -9,13 +9,13 @@ import os
 import shutil
 
 directory = '../images'
-def get_images():
+def get_images(uid):
     path = os.path.abspath(directory)
     if os.path.exists(path):
         shutil.rmtree(path)
     os.mkdir(path)
 
-    doc_ref = cloud_firestore.collection("users").document("anonymous")
+    doc_ref = cloud_firestore.collection("users").document(uid)
     image_ref = doc_ref.collection("images").stream()
     count = 0
     for doc in image_ref:
@@ -33,8 +33,7 @@ def visualize_output_from_data(data, num):
 
 button_style = ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10))
 
-def gallery_page(page: ft.Page):
-        
+def gallery_page(page: ft.Page, uid: str):
     images = ft.GridView(
         expand=1,
         runs_count=5,
@@ -54,10 +53,11 @@ def gallery_page(page: ft.Page):
                     border_radius=ft.border_radius.all(10),
                 )
             )
+        page.update()
 
     buttons = [
-        ft.ElevatedButton("Log out", on_click=lambda _: page.go("/"), style=button_style),
-        ft.ElevatedButton("Go to canvas", on_click=lambda _: page.go("/home"), style=button_style),
+        ft.ElevatedButton("Log out", on_click=lambda _: page.go("/",), style=button_style),
+        ft.ElevatedButton("Go to canvas", on_click=lambda _: page.go("/home", uid=uid), style=button_style),
     ]
     return [
             ft.AppBar(

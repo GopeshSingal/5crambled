@@ -308,7 +308,7 @@ def home_page(page: ft.Page, uid: str):
 
     buttons = [
         ft.ElevatedButton("Log out", on_click=lambda _: page.go("/"), style=button_style),
-        ft.ElevatedButton("See gallery", on_click=lambda _: page.go("/works"), style=button_style)
+        ft.ElevatedButton("See gallery", on_click=lambda _: page.go("/works", uid=uid), style=button_style)
     ]
 
     return [

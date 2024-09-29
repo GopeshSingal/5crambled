@@ -14,7 +14,10 @@ def main(page: ft.Page):
     def route_change(route):
         url = urlparse(route.data)
         query_params = parse_qs(url.query)
-
+        try:
+            uid = query_params['uid'][0]
+        except:
+            uid = 'anonymous'
         page.views.clear()
         page.views.append(
             ft.View(
@@ -23,11 +26,6 @@ def main(page: ft.Page):
             )
         )
         if url.path == "/home":
-            try:
-                uid = query_params['uid'][0]
-            except:
-                uid = 'anonymous'
-
             page.views.append(
                 ft.View(
                     "/home",
@@ -35,12 +33,13 @@ def main(page: ft.Page):
                 )
             )
         
-        if page.route == "/works":
-            get_images()
+        if url.path == "/works":
+            get_images(uid)
+            page.views.clear()
             page.views.append(
                 ft.View(
                     "/works",
-                    controls=gallery_page(page)
+                    controls=gallery_page(page, uid=uid)
                 )
             )
         page.update()

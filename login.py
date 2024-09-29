@@ -85,8 +85,8 @@ def login_page(page: ft.Page):
     login_button = ft.ElevatedButton(text='Login', on_click=login)
     
     buttons = [
-        ft.ElevatedButton("Go to canvas", on_click=lambda _: page.go("/home"), style=button_style),
-        ft.ElevatedButton("See gallery", on_click=lambda _: page.go("/works"), style=button_style)
+        ft.ElevatedButton("Go to canvas", on_click=lambda _: page.go("/home", uid='anonymous'), style=button_style),
+        ft.ElevatedButton("See gallery", on_click=lambda _: page.go("/works", uid='anonymous'), style=button_style)
     ]
     
     return [

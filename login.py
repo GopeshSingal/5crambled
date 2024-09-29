@@ -86,10 +86,14 @@ def login_page(page: ft.Page):
     return [
         ft.AppBar(
             title=ft.Text("Login"),
+            center_title=True, 
             bgcolor=ft.colors.SURFACE_VARIANT,
             actions=[
-                ft.ElevatedButton("Go to canvas", on_click=lambda _: page.go("/home"))
-            ]
+                ft.Container(
+                    ft.ElevatedButton("Go to canvas", on_click=lambda _: page.go("/home"), style=button_style), 
+                    padding=ft.padding.only(right=10)
+                ),
+            ],
         ),
         input_row
     ]

@@ -164,17 +164,25 @@ def home_page(page: ft.Page, uid: str):
                 shape.paint.color = old_state[i]
             cp.update()
 
-    def fill_checkbox_changed(e):
+    def fill_button_clicked(e):
         if state.fill:
             state.fill = False
+            e.control.selected = not e.control.selected
+            e.control.update()
         else:
             state.fill = True
+            e.control.selected = not e.control.selected
+            e.control.update()
     
-    def dropper_checkbox_changed(e):
+    def dropper_button_clicked(e):
         if state.dropper:
             state.dropper = False
+            e.control.selected = not e.control.selected
+            e.control.update()
         else:
             state.dropper = True
+            e.control.selected = not e.control.selected
+            e.control.update()
 
     def is_valid(x, y):
         return 0 <= x < grid_size and 0 <= y < grid_size
@@ -224,28 +232,46 @@ def home_page(page: ft.Page, uid: str):
 
     button_row = ft.Row(
         [
-            ft.ElevatedButton(
-                text="Reset", 
+            ft.IconButton(
+                icon=ft.icons.FORMAT_COLOR_RESET_ROUNDED,
+                icon_color="blue_700",
+                icon_size=20, 
                 on_click=reset_canvas, 
-                style=button_style
             ),
-            ft.ElevatedButton(
-                text="Upload", 
+            ft.IconButton(
+                icon=ft.icons.CLOUD_UPLOAD_ROUNDED,
+                icon_color="blue_700",
+                icon_size=20, 
                 on_click=upload_to_firebase, 
-                style=button_style
             ),
-            ft.ElevatedButton(
-                text="Undo", 
+            ft.IconButton(
+                icon=ft.icons.UNDO_ROUNDED,
+                icon_color="blue_700",
+                icon_size=20, 
                 on_click=revert_state, 
-                style=button_style
             ),
-            ft.ElevatedButton(
-                text="Redo", 
+            ft.IconButton(
+                icon=ft.icons.REDO_ROUNDED,
+                icon_color="blue_700",
+                icon_size=20, 
                 on_click=unrevert_state, 
-                style=button_style
             ),
-            ft.Checkbox(label="Fill Mode", on_change=fill_checkbox_changed),
-            ft.Checkbox(label="Dropper", on_change=dropper_checkbox_changed)
+            ft.IconButton(
+                icon=ft.icons.FORMAT_COLOR_FILL_ROUNDED, 
+                selected_icon=ft.icons.FORMAT_COLOR_FILL_ROUNDED, 
+                icon_size=20, 
+                on_click=fill_button_clicked, 
+                selected=False,
+                style=ft.ButtonStyle(color={"selected": ft.colors.BLUE_200, "": ft.colors.BLUE_900})
+            ),
+            ft.IconButton(
+                icon=ft.icons.COLORIZE_ROUNDED, 
+                selected_icon=ft.icons.COLORIZE_ROUNDED,  
+                icon_size=20, 
+                on_click=dropper_button_clicked, 
+                selected=False,
+                style=ft.ButtonStyle(color={"selected": ft.colors.BLUE_200, "": ft.colors.BLUE_900})
+            )
         ]
     )
 
@@ -281,6 +307,17 @@ def home_page(page: ft.Page, uid: str):
     )
 
     return [
-            ft.AppBar(title=ft.Text("Home"), bgcolor=ft.colors.SURFACE_VARIANT, actions=[ft.ElevatedButton("Log out", on_click=lambda _: page.go("/"))],),
+            ft.AppBar(
+                leading=ft.Container(), 
+                title=ft.Text("Home"), 
+                center_title=True, 
+                bgcolor=ft.colors.SURFACE_VARIANT, 
+                actions=[
+                    ft.Container(
+                        ft.ElevatedButton("Log out", on_click=lambda _: page.go("/"), style=button_style),
+                        padding=ft.padding.only(right=10)
+                    )
+                ],
+            ),
             main_col
         ]

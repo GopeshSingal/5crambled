@@ -92,14 +92,38 @@ def home_page(page: ft.Page, uid: str):
                 shapes.append(cv.Rect(j * ratio, i * ratio, ratio, ratio, paint=ft.Paint(color="#ffffff", stroke_width=2)))
         return shapes
 
-    def upload_to_firebase(e):
+    def upload_anon(e):
         data_array = []
         for i in range(grid_size):
             for j in range(grid_size):
                 data_array.append(cp.shapes[(int)(j + i * grid_size)].paint.color)
+        cloud_firestore.collection("users").document('anonymous').collection('images').document(datetime.now().isoformat()).set({"hex_array": data_array,
+                                         "timestamp": firestore.SERVER_TIMESTAMP})
+        if uid != 'anonymous':
+            cloud_firestore.collection("users").document(uid).collection('images').document(datetime.now().isoformat()).set({"hex_array": data_array,
+                                            "timestamp": firestore.SERVER_TIMESTAMP})
+        diag_box.open = False
+        page.update()
 
+    def upload_private(e):
+        data_array = []
+        for i in range(grid_size):
+            for j in range(grid_size):
+                data_array.append(cp.shapes[(int)(j + i * grid_size)].paint.color)
         cloud_firestore.collection("users").document(uid).collection('images').document(datetime.now().isoformat()).set({"hex_array": data_array,
                                          "timestamp": firestore.SERVER_TIMESTAMP})
+        diag_box.open = False
+        page.update()
+
+    def upload_cancel(e):
+        diag_box.open = False
+        page.update()
+
+    def upload_to_firebase(e):
+        page.views[-1].controls.append(diag_box)
+        diag_box.open=True
+        page.update()
+
     def set_pixel(x, y):
         if -1 < x < 512 and -1 < y < 512:
             x = x // ratio
@@ -209,6 +233,17 @@ def home_page(page: ft.Page, uid: str):
                 frontier.append((cx, cy - 1))
 
     color_palette = Color_palette(page)
+
+    diag_box = ft.AlertDialog(
+            modal=True,
+            title=ft.Text("Upload globally or privately?"),
+            actions=[
+                    ft.TextButton("Global", on_click=upload_anon),
+                    ft.TextButton("Private", on_click=upload_private),
+                    ft.TextButton("Cancel", on_click=upload_cancel)
+            ],
+            actions_alignment=ft.MainAxisAlignment.END,
+            )
 
     cp = cv.Canvas(init_canvas(),
         content=ft.GestureDetector(
@@ -323,7 +358,7 @@ def home_page(page: ft.Page, uid: str):
     return [
             ft.AppBar(
                 leading=ft.Container(), 
-                title=ft.Text("Home"), 
+                title=ft.Text("Prompt: Favorite Food"), 
                 center_title=True, 
                 bgcolor=ft.colors.SURFACE_VARIANT, 
                 actions=[

@@ -50,7 +50,7 @@ def gallery_page(page: ft.Page, uid: str):
     
     for filename in os.listdir(directory):
         if "output" in filename:
-            print(f'{directory}/{filename}', uid)
+            # print(f'{directory}/{filename}', uid)
             images.controls.append(
                 ft.Image(
                     src=os.path.abspath(f'{directory}/{filename}'),

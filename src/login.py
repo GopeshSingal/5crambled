@@ -86,7 +86,12 @@ def login_page(page: ft.Page):
     
     buttons = [
         ft.ElevatedButton("Go to canvas", on_click=lambda _: page.go("/home", uid='anonymous'), style=button_style),
-        ft.ElevatedButton("See gallery", on_click=lambda _: page.go("/works", uid='anonymous'), style=button_style)
+        ft.IconButton(
+            icon=ft.icons.PHOTO_LIBRARY_ROUNDED, 
+            icon_color=ft.colors.BLUE_GREY_700,
+            icon_size=28,
+            on_click=lambda _: page.go("/works", uid='anonymous')
+        )
     ]
     
     return [

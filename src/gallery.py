@@ -61,20 +61,34 @@ def gallery_page(page: ft.Page, uid: str):
             )
         # page.update()
 
-    buttons = [
-        ft.ElevatedButton("Log out", on_click=lambda _: page.go("/",), style=button_style),
-        ft.ElevatedButton("Go to canvas", on_click=lambda _: page.go("/home", uid=uid), style=button_style),
+    home_button = [
+        ft.IconButton(
+            icon=ft.icons.HOUSE_ROUNDED, 
+            icon_color=ft.colors.BLUE_GREY_700, 
+            icon_size=28, 
+            on_click=lambda _: page.go("/home")
+        )
     ]
-    print(images.controls)
+
+    logout_button = [
+        ft.IconButton(
+            icon=ft.icons.LOGOUT_ROUNDED, 
+            icon_color=ft.colors.BLUE_GREY_700, 
+            icon_size=28, 
+            on_click=lambda _: page.go("/"))
+    ]
+    
     return [
             ft.AppBar(
-                leading=ft.Container(), 
-                title=ft.Text("Home"), 
+                leading=ft.Container(
+                    content=ft.Row(home_button), 
+                    padding=ft.padding.only(left=10)), 
+                title=ft.Text("Gallery"), 
                 center_title=True, 
                 bgcolor=ft.colors.SURFACE_VARIANT, 
                 actions=[
                     ft.Container(
-                        content=ft.Row(buttons),
+                        content=ft.Row(logout_button),
                         padding=ft.padding.only(right=10)
                     )
                 ],

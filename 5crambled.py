@@ -2,7 +2,7 @@ import flet as ft
 
 from home import home_page
 from login import login_page
-from gallery import gallery_page
+from gallery import gallery_page, get_images
 from urllib.parse import urlparse, parse_qs
 
 def main(page: ft.Page):
@@ -35,6 +35,7 @@ def main(page: ft.Page):
             )
         
         if page.route == "/works":
+            get_images()
             page.views.append(
                 ft.View(
                     "/works",

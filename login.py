@@ -85,8 +85,8 @@ def login_page(page: ft.Page):
     login_button = ft.ElevatedButton(text='Login', on_click=login)
     
     buttons = [
-        ft.ElevatedButton("Go to canvas", on_click=lambda _: page.go("/home")),
-        ft.ElevatedButton("See Gallery", on_click=lambda _: page.go("/works"))
+        ft.ElevatedButton("Go to canvas", on_click=lambda _: page.go("/home"), style=button_style),
+        ft.ElevatedButton("See gallery", on_click=lambda _: page.go("/works"), style=button_style)
     ]
     
     return [
@@ -96,7 +96,7 @@ def login_page(page: ft.Page):
             bgcolor=ft.colors.SURFACE_VARIANT,
             actions=[
                 ft.Container(
-                    ft.ElevatedButton("Go to canvas", on_click=lambda _: page.go("/home"), style=button_style), 
+                    content=ft.Row(buttons), 
                     padding=ft.padding.only(right=10)
                 ),
             ],

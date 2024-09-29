@@ -307,8 +307,8 @@ def home_page(page: ft.Page, uid: str):
     )
 
     buttons = [
-        ft.ElevatedButton("Go to canvas", on_click=lambda _: page.go("/home")),
-        ft.ElevatedButton("See Gallery", on_click=lambda _: page.go("/works"))
+        ft.ElevatedButton("Log out", on_click=lambda _: page.go("/"), style=button_style),
+        ft.ElevatedButton("See gallery", on_click=lambda _: page.go("/works"), style=button_style)
     ]
 
     return [
@@ -319,7 +319,7 @@ def home_page(page: ft.Page, uid: str):
                 bgcolor=ft.colors.SURFACE_VARIANT, 
                 actions=[
                     ft.Container(
-                        ft.ElevatedButton("Log out", on_click=lambda _: page.go("/"), style=button_style),
+                        content=ft.Row(buttons),
                         padding=ft.padding.only(right=10)
                     )
                 ],

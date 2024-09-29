@@ -3,6 +3,7 @@ import flet.canvas as cv
 from firebase_admin import firestore
 from flet_contrib.color_picker import ColorPicker
 from firebase_utils import cloud_firestore
+from datetime import datetime
 
 canvas_size = 512
 grid_size = 32
@@ -83,7 +84,7 @@ history = []
 rhistory = []
 color_picker = ColorPicker(color="#fff8e7")
 
-def home_page(page: ft.Page):
+def home_page(page: ft.Page, uid: str):
     def init_canvas():
         shapes = []
         for i in range(grid_size):
@@ -95,11 +96,10 @@ def home_page(page: ft.Page):
         data_array = []
         for i in range(grid_size):
             for j in range(grid_size):
-                data_array.append(cp.shapes[(int)(i + j * grid_size)].paint.color)
-        
-        cloud_firestore.collection("images").add({"hex_array": data_array,
-                                             "timestamp": firestore.SERVER_TIMESTAMP})
-        
+                data_array.append(cp.shapes[(int)(j + i * grid_size)].paint.color)
+
+        cloud_firestore.collection("users").document(uid).collection('images').document(datetime.now().isoformat()).set({"hex_array": data_array,
+                                         "timestamp": firestore.SERVER_TIMESTAMP})
     def set_pixel(x, y):
         if -1 < x < 512 and -1 < y < 512:
             x = x // ratio
@@ -164,17 +164,25 @@ def home_page(page: ft.Page):
                 shape.paint.color = old_state[i]
             cp.update()
 
-    def fill_checkbox_changed(e):
+    def fill_button_clicked(e):
         if state.fill:
             state.fill = False
+            e.control.selected = not e.control.selected
+            e.control.update()
         else:
             state.fill = True
+            e.control.selected = not e.control.selected
+            e.control.update()
     
-    def dropper_checkbox_changed(e):
+    def dropper_button_clicked(e):
         if state.dropper:
             state.dropper = False
+            e.control.selected = not e.control.selected
+            e.control.update()
         else:
             state.dropper = True
+            e.control.selected = not e.control.selected
+            e.control.update()
 
     def is_valid(x, y):
         return 0 <= x < grid_size and 0 <= y < grid_size
@@ -224,28 +232,46 @@ def home_page(page: ft.Page):
 
     button_row = ft.Row(
         [
-            ft.ElevatedButton(
-                text="Reset", 
+            ft.IconButton(
+                icon=ft.icons.FORMAT_COLOR_RESET_ROUNDED,
+                icon_color="blue_700",
+                icon_size=20, 
                 on_click=reset_canvas, 
-                style=button_style
             ),
-            ft.ElevatedButton(
-                text="Upload", 
+            ft.IconButton(
+                icon=ft.icons.CLOUD_UPLOAD_ROUNDED,
+                icon_color="blue_700",
+                icon_size=20, 
                 on_click=upload_to_firebase, 
-                style=button_style
             ),
-            ft.ElevatedButton(
-                text="Undo", 
+            ft.IconButton(
+                icon=ft.icons.UNDO_ROUNDED,
+                icon_color="blue_700",
+                icon_size=20, 
                 on_click=revert_state, 
-                style=button_style
             ),
-            ft.ElevatedButton(
-                text="Redo", 
+            ft.IconButton(
+                icon=ft.icons.REDO_ROUNDED,
+                icon_color="blue_700",
+                icon_size=20, 
                 on_click=unrevert_state, 
-                style=button_style
             ),
-            ft.Checkbox(label="Fill Mode", on_change=fill_checkbox_changed),
-            ft.Checkbox(label="Dropper", on_change=dropper_checkbox_changed)
+            ft.IconButton(
+                icon=ft.icons.FORMAT_COLOR_FILL_ROUNDED, 
+                selected_icon=ft.icons.FORMAT_COLOR_FILL_ROUNDED, 
+                icon_size=20, 
+                on_click=fill_button_clicked, 
+                selected=False,
+                style=ft.ButtonStyle(color={"selected": ft.colors.BLUE_200, "": ft.colors.BLUE_900})
+            ),
+            ft.IconButton(
+                icon=ft.icons.COLORIZE_ROUNDED, 
+                selected_icon=ft.icons.COLORIZE_ROUNDED,  
+                icon_size=20, 
+                on_click=dropper_button_clicked, 
+                selected=False,
+                style=ft.ButtonStyle(color={"selected": ft.colors.BLUE_200, "": ft.colors.BLUE_900})
+            )
         ]
     )
 
@@ -286,6 +312,17 @@ def home_page(page: ft.Page):
     ]
 
     return [
-            ft.AppBar(title=ft.Text("Home"), bgcolor=ft.colors.SURFACE_VARIANT, actions=buttons,),
+            ft.AppBar(
+                leading=ft.Container(), 
+                title=ft.Text("Home"), 
+                center_title=True, 
+                bgcolor=ft.colors.SURFACE_VARIANT, 
+                actions=[
+                    ft.Container(
+                        ft.ElevatedButton("Log out", on_click=lambda _: page.go("/"), style=button_style),
+                        padding=ft.padding.only(right=10)
+                    )
+                ],
+            ),
             main_col
         ]

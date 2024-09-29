@@ -3,7 +3,7 @@ import flet as ft
 from home import home_page
 from login import login_page
 from gallery import gallery_page, get_images
-
+from urllib.parse import urlparse, parse_qs
 
 def main(page: ft.Page):
     page.title = "5crambled"
@@ -11,6 +11,9 @@ def main(page: ft.Page):
     page.window.maximized = True
 
     def route_change(route):
+        url = urlparse(route.data)
+        query_params = parse_qs(url.query)
+
         page.views.clear()
         page.views.append(
             ft.View(
@@ -18,11 +21,16 @@ def main(page: ft.Page):
                 controls=login_page(page)
             )
         )
-        if page.route == "/home":
+        if url.path == "/home":
+            try:
+                uid = query_params['uid'][0]
+            except:
+                uid = 'anonymous'
+
             page.views.append(
                 ft.View(
                     "/home",
-                    controls=home_page(page)
+                    controls=home_page(page, uid)
                 )
             )
         

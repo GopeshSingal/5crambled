@@ -257,7 +257,12 @@ def home_page(page: ft.Page):
         expand = True
     )
 
+    buttons = [
+        ft.ElevatedButton("Go to canvas", on_click=lambda _: page.go("/home")),
+        ft.ElevatedButton("See Gallery", on_click=lambda _: page.go("/works"))
+    ]
+
     return [
-            ft.AppBar(title=ft.Text("Home"), bgcolor=ft.colors.SURFACE_VARIANT, actions=[ft.ElevatedButton("Log out", on_click=lambda _: page.go("/"))],),
+            ft.AppBar(title=ft.Text("Home"), bgcolor=ft.colors.SURFACE_VARIANT, actions=buttons,),
             main_col
         ]

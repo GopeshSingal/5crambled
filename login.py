@@ -17,9 +17,14 @@ def login_page(page: ft.Page):
         ]
     )
     login_button = ft.ElevatedButton(text='Login', on_click=login)
-
+    
+    buttons = [
+        ft.ElevatedButton("Go to canvas", on_click=lambda _: page.go("/home")),
+        ft.ElevatedButton("See Gallery", on_click=lambda _: page.go("/works"))
+    ]
+    
     return [
-        ft.AppBar(title=ft.Text("Login"), bgcolor=ft.colors.SURFACE_VARIANT, actions=[ft.ElevatedButton("Go to canvas", on_click=lambda _: page.go("/home"))]),
+        ft.AppBar(title=ft.Text("Login"), bgcolor=ft.colors.SURFACE_VARIANT, actions=buttons),
         input_row,
         login_button
     ]

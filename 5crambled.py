@@ -2,6 +2,7 @@ import flet as ft
 
 from home import home_page
 from login import login_page
+from gallery import gallery_page
 
 
 def main(page: ft.Page):
@@ -22,6 +23,14 @@ def main(page: ft.Page):
                 ft.View(
                     "/home",
                     controls=home_page(page)
+                )
+            )
+        
+        if page.route == "/works":
+            page.views.append(
+                ft.View(
+                    "/works",
+                    controls=gallery_page(page)
                 )
             )
         page.update()

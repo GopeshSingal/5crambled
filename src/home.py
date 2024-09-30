@@ -82,7 +82,7 @@ state.fill = False
 state.dropper = False
 history = []
 rhistory = []
-color_picker = ColorPicker(color="#fff8e7")
+color_picker = ColorPicker(color="#000000")
 
 def home_page(page: ft.Page, uid: str, data):
     def init_canvas():
@@ -98,15 +98,62 @@ def home_page(page: ft.Page, uid: str, data):
     
     page.on_keyboard_event = lambda x: handle_key(e=x)
     def handle_key(e: ft.KeyboardEvent):
-        if e.key == "Z" and (e.ctrl or e.meta) and not e.shift:
-            revert_state(e)
-        elif e.key == "Z" and (e.ctrl or e.meta) and e.shift:
-            unrevert_state(e)
-        elif e.key == "A" and (e.ctrl or e.meta):
-            button_row.controls[4].selected = not button_row.controls[4].selected
-            button_row.update()
-            fill_button_clicked(e)
-
+        match e.key:
+            case "Z" if e.ctrl or e.meta:
+                if e.shift:
+                    unrevert_state(e)
+                else:
+                    revert_state(e)
+            case "A" if e.ctrl or e.meta:
+                button_row.controls[4].selected = not button_row.controls[4].selected
+                button_row.update()
+                fill_button_clicked(e)
+            case "D" if e.ctrl or e.meta:
+                button_row.controls[5].selected = not button_row.controls[5].selected
+                button_row.update()
+                dropper_button_clicked(e)
+            case "1":
+                color_picker.color = color_palette.palette.controls[0].controls[0].icon_color
+                color_palette.palette.controls[0].controls[0].selected = True
+                color_palette.palette.controls[0].controls[0].focus()
+                color_palette.palette.controls[0].controls[0].update()
+                page.update()
+            case "2":
+                color_picker.color = color_palette.palette.controls[0].controls[1].icon_color
+                color_palette.palette.controls[0].controls[1].selected = True
+                color_palette.palette.controls[0].controls[1].focus()
+                color_palette.palette.controls[0].controls[1].update()
+                page.update()
+            case "3":
+                color_picker.color = color_palette.palette.controls[0].controls[2].icon_color
+                color_palette.palette.controls[0].controls[2].selected = True
+                color_palette.palette.controls[0].controls[2].focus()
+                color_palette.palette.controls[0].controls[2].update()
+                page.update()
+            case "4":
+                color_picker.color = color_palette.palette.controls[0].controls[3].icon_color
+                color_palette.palette.controls[0].controls[3].selected = True
+                color_palette.palette.controls[0].controls[3].focus()
+                color_palette.palette.controls[0].controls[3].update()
+                page.update()
+            case "5":
+                color_picker.color = color_palette.palette.controls[0].controls[4].icon_color
+                color_palette.palette.controls[0].controls[4].selected = True
+                color_palette.palette.controls[0].controls[4].focus()
+                color_palette.palette.controls[0].controls[4].update()
+                page.update()
+            case "6":
+                color_picker.color = color_palette.palette.controls[0].controls[5].icon_color
+                color_palette.palette.controls[0].controls[5].selected = True
+                color_palette.palette.controls[0].controls[5].focus()
+                color_palette.palette.controls[0].controls[5].update()
+                page.update()
+            case "7":
+                color_picker.color = color_palette.palette.controls[0].controls[6].icon_color
+                color_palette.palette.controls[0].controls[6].selected = True
+                color_palette.palette.controls[0].controls[6].focus()
+                color_palette.palette.controls[0].controls[6].update()
+                page.update()
     def upload_anon(e):
         data_array = []
         for i in range(grid_size):
@@ -139,14 +186,14 @@ def home_page(page: ft.Page, uid: str, data):
         diag_box.open=True
         page.update()
 
+    def pan_start(e: ft.DragStartEvent):
+        set_pixel(e.local_x, e.local_y)
+
     def set_pixel(x, y):
-        if -1 < x < 512 and -1 < y < 512:
+        if 0 <= x < 512 and 0 <= y < 512:
             x = x // ratio
             y = y // ratio
             cp.shapes[(int)(x + y * grid_size)].paint.color = color_picker.color
-
-    def pan_start(e: ft.DragStartEvent):
-        set_pixel(e.local_x, e.local_y)
 
     def pan_update(e: ft.DragUpdateEvent):
         set_pixel(e.local_x, e.local_y)
@@ -191,16 +238,16 @@ def home_page(page: ft.Page, uid: str, data):
         rhistory.clear()
 
     def revert_state(e):
-        save_state(False)
         if history:
+            save_state(False)
             old_state = history.pop()
             for i, shape in enumerate(cp.shapes):
                 shape.paint.color = old_state[i]
             cp.update()
     
     def unrevert_state(e):
-        save_state()
         if rhistory:
+            save_state()
             old_state = rhistory.pop()
             for i, shape in enumerate(cp.shapes):
                 shape.paint.color = old_state[i]
@@ -213,6 +260,9 @@ def home_page(page: ft.Page, uid: str, data):
             e.control.update()
         else:
             state.fill = True
+            button_row.controls[5].selected = False
+            button_row.update()
+            state.dropper = False
             e.control.selected = not e.control.selected
             e.control.update()
     
@@ -223,6 +273,9 @@ def home_page(page: ft.Page, uid: str, data):
             e.control.update()
         else:
             state.dropper = True
+            button_row.controls[4].selected = False
+            button_row.update()
+            state.fill = False
             e.control.selected = not e.control.selected
             e.control.update()
 

@@ -49,7 +49,7 @@ def gallery_page(page: ft.Page, uid: str):
                     repeat=ft.ImageRepeat.NO_REPEAT,
                     border_radius=ft.border_radius.all(10),
                 ),
-                on_click=lambda _: page.go("/home", data=query_param)
+                on_click=lambda _: page.go("/home", uid=uid, data=query_param)
             )
         )
 

@@ -2,7 +2,7 @@ import flet as ft
 
 from home import home_page
 from login import login_page
-from gallery import gallery_page, get_images, remove_local
+from gallery import gallery_page, remove_local
 from urllib.parse import urlparse, parse_qs
 
 def main(page: ft.Page):
@@ -12,12 +12,18 @@ def main(page: ft.Page):
     page.theme_mode = ft.ThemeMode.LIGHT
 
     def route_change(route):
+        remove_local()
         url = urlparse(route.data)
         query_params = parse_qs(url.query)
         try:
             uid = query_params['uid'][0]
         except:
             uid = 'anonymous'
+        try:
+            data = parse_qs(query_params['data'][0])['data']
+        except:
+            data = None
+
         page.views.clear()
         page.views.append(
             ft.View(
@@ -26,16 +32,14 @@ def main(page: ft.Page):
             )
         )
         if url.path == "/home":
-            remove_local()
             page.views.append(
                 ft.View(
                     "/home",
-                    controls=home_page(page, uid)
+                    controls=home_page(page, uid, data)
                 )
             )
         
         if url.path == "/works":
-            get_images(uid)
             a = gallery_page(page, uid)
             # print(a, uid)
             page.views.clear()

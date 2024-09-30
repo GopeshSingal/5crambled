@@ -84,13 +84,18 @@ history = []
 rhistory = []
 color_picker = ColorPicker(color="#fff8e7")
 
-def home_page(page: ft.Page, uid: str):
+def home_page(page: ft.Page, uid: str, data):
     def init_canvas():
         shapes = []
         for i in range(grid_size):
             for j in range(grid_size):
-                shapes.append(cv.Rect(j * ratio, i * ratio, ratio, ratio, paint=ft.Paint(color="#ffffff", stroke_width=2)))
+                if data:
+                    shapes.append(cv.Rect(j * ratio, i * ratio, ratio, ratio, paint=ft.Paint(color=data[i * grid_size + j], stroke_width=2))) 
+                    # shapes.append(cv.Rect(j * ratio, i * ratio, ratio, ratio, paint=ft.Paint(color="#ffffff", stroke_width=2)))
+                else:
+                    shapes.append(cv.Rect(j * ratio, i * ratio, ratio, ratio, paint=ft.Paint(color="#ffffff", stroke_width=2)))
         return shapes
+    
     page.on_keyboard_event = lambda x: handle_key(e=x)
     def handle_key(e: ft.KeyboardEvent):
         if e.key == "Z" and (e.ctrl or e.meta) and not e.shift:

@@ -4,34 +4,13 @@ from firebase_admin import firestore
 from flet_contrib.color_picker import ColorPicker
 from firebase_utils import cloud_firestore
 from PIL import Image
+from urllib.parse import urlencode
 import math
 
 import os
 import shutil
 
 directory = '../images'
-def get_images(uid):
-    path = os.path.abspath(directory)
-    if os.path.exists(path):
-        shutil.rmtree(path)
-    os.mkdir(path)
-
-    doc_ref = cloud_firestore.collection("users").document(uid)
-    image_ref = doc_ref.collection("images").stream()
-    count = 0
-    for doc in image_ref:
-        count += 1
-        image = doc.to_dict()
-        data = image["hex_array"]
-        visualize_output_from_data(data, count, uid)
-
-def visualize_output_from_data(data, num, uid):
-    hex_array = data
-    size = math.sqrt(len(hex_array))
-    rgb_array = [(int(hex_color[1:3], 16), int(hex_color[3:5], 16), int(hex_color[5:7], 16)) for hex_color in hex_array]
-    image = Image.new("RGB", ((int)(size), (int)(size)))
-    image.putdata(rgb_array)
-    image.save(f'{directory}/output_{uid}_{num}.png')
 
 def remove_local():
     path = os.path.abspath(directory)
@@ -49,19 +28,45 @@ def gallery_page(page: ft.Page, uid: str):
         spacing=5,
         run_spacing=5,
     )
-    
-    for filename in os.listdir(directory):
-        if "output" in filename:
-            # print(f'{directory}/{filename}', uid)
-            images.controls.append(
-                ft.Image(
-                    src=os.path.abspath(f'{directory}/{filename}'),
+
+    # def make_canvas(e, data):
+        
+    #     print("CLICKED\n", data)
+
+    def visualize_output_from_data(data, num, uid):
+        hex_array = data
+        size = math.sqrt(len(hex_array))
+        rgb_array = [(int(hex_color[1:3], 16), int(hex_color[3:5], 16), int(hex_color[5:7], 16)) for hex_color in hex_array]
+        image = Image.new("RGB", ((int)(size), (int)(size)))
+        image.putdata(rgb_array)
+        image.save(f'{directory}/output_{uid}_{num}.png')
+        query_param = urlencode([('data', i) for i in data])
+        images.controls.append(
+            ft.Container(
+                content=ft.Image(
+                    src=os.path.abspath(f'{directory}/output_{uid}_{num}.png'),
                     fit=ft.ImageFit.CONTAIN,
                     repeat=ft.ImageRepeat.NO_REPEAT,
                     border_radius=ft.border_radius.all(10),
-                )
+                ),
+                on_click=lambda _: page.go("/home", data=query_param)
             )
-        # page.update()
+        )
+
+    path = os.path.abspath(directory)
+    if os.path.exists(path):
+        shutil.rmtree(path)
+    os.mkdir(path)
+
+    doc_ref = cloud_firestore.collection("users").document(uid)
+    image_ref = doc_ref.collection("images").stream()
+    count = 0
+    for doc in image_ref:
+        count += 1
+        image = doc.to_dict()
+        data = image["hex_array"]
+        visualize_output_from_data(data, count, uid)
+
 
     home_button = [
         ft.IconButton(

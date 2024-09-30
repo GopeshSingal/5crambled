@@ -145,6 +145,9 @@ def home_page(page: ft.Page, uid: str):
             j = e.local_y // ratio
             color_picker.color = cp.shapes[(int)(i + j * grid_size)].paint.color
             color_picker.update()
+            button_row.controls[5].selected = False
+            button_row.update()
+            state.dropper = False
             return
         save_state()
         reset_history()
@@ -231,6 +234,10 @@ def home_page(page: ft.Page, uid: str):
                 frontier.append((cx - 1, cy))
                 frontier.append((cx, cy + 1))
                 frontier.append((cx, cy - 1))
+        button_row.controls[4].selected = False
+        button_row.update()
+        state.fill = False
+
 
     color_palette = Color_palette(page)
 
@@ -272,24 +279,28 @@ def home_page(page: ft.Page, uid: str):
                 icon_color=ft.colors.BLUE_GREY_700,
                 icon_size=20, 
                 on_click=reset_canvas, 
+                tooltip="Reset",
             ),
             ft.IconButton(
                 icon=ft.icons.CLOUD_UPLOAD_ROUNDED,
                 icon_color=ft.colors.BLUE_GREY_700,
                 icon_size=20, 
                 on_click=upload_to_firebase, 
+                tooltip="Upload",
             ),
             ft.IconButton(
                 icon=ft.icons.UNDO_ROUNDED,
                 icon_color=ft.colors.BLUE_GREY_700,
                 icon_size=20, 
                 on_click=revert_state, 
+                tooltip="Undo",
             ),
             ft.IconButton(
                 icon=ft.icons.REDO_ROUNDED,
                 icon_color=ft.colors.BLUE_GREY_700,
                 icon_size=20, 
                 on_click=unrevert_state, 
+                tooltip="Redo",
             ),
             ft.IconButton(
                 icon=ft.icons.FORMAT_COLOR_FILL_ROUNDED, 
@@ -297,7 +308,8 @@ def home_page(page: ft.Page, uid: str):
                 icon_size=20, 
                 on_click=fill_button_clicked, 
                 selected=False,
-                style=ft.ButtonStyle(color={"selected": ft.colors.BLUE_300, "": ft.colors.BLUE_GREY_700})
+                style=ft.ButtonStyle(color={"selected": ft.colors.BLUE_300, "": ft.colors.BLUE_GREY_700}),
+                tooltip="Toggle Fill",
             ),
             ft.IconButton(
                 icon=ft.icons.COLORIZE_ROUNDED, 
@@ -305,7 +317,8 @@ def home_page(page: ft.Page, uid: str):
                 icon_size=20, 
                 on_click=dropper_button_clicked, 
                 selected=False,
-                style=ft.ButtonStyle(color={"selected": ft.colors.BLUE_300, "": ft.colors.BLUE_GREY_700})
+                style=ft.ButtonStyle(color={"selected": ft.colors.BLUE_300, "": ft.colors.BLUE_GREY_700}),
+                tooltip="Toggle Dropper",
             )
         ]
     )

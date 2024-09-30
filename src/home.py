@@ -91,6 +91,16 @@ def home_page(page: ft.Page, uid: str):
             for j in range(grid_size):
                 shapes.append(cv.Rect(j * ratio, i * ratio, ratio, ratio, paint=ft.Paint(color="#ffffff", stroke_width=2)))
         return shapes
+    page.on_keyboard_event = lambda x: handle_key(e=x)
+    def handle_key(e: ft.KeyboardEvent):
+        if e.key == "Z" and (e.ctrl or e.meta) and not e.shift:
+            revert_state(e)
+        elif e.key == "Z" and (e.ctrl or e.meta) and e.shift:
+            unrevert_state(e)
+        elif e.key == "A" and (e.ctrl or e.meta):
+            button_row.controls[4].selected = not button_row.controls[4].selected
+            button_row.update()
+            fill_button_clicked(e)
 
     def upload_anon(e):
         data_array = []

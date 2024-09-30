@@ -4,6 +4,7 @@ from firebase_admin import firestore
 from flet_contrib.color_picker import ColorPicker
 from firebase_utils import cloud_firestore
 from PIL import Image
+import math
 
 import os
 import shutil
@@ -26,8 +27,9 @@ def get_images(uid):
 
 def visualize_output_from_data(data, num, uid):
     hex_array = data
+    size = math.sqrt(len(hex_array))
     rgb_array = [(int(hex_color[1:3], 16), int(hex_color[3:5], 16), int(hex_color[5:7], 16)) for hex_color in hex_array]
-    image = Image.new("RGB", (32, 32))
+    image = Image.new("RGB", ((int)(size), (int)(size)))
     image.putdata(rgb_array)
     image.save(f'{directory}/output_{uid}_{num}.png')
 

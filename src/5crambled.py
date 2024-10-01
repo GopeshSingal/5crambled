@@ -2,7 +2,7 @@ import flet as ft
 
 from home import HomePage
 from login import LoginPage
-from gallery import gallery_page, remove_local
+from gallery import GalleryPage, remove_local
 from urllib.parse import urlparse, parse_qs
 
 def main(page: ft.Page):
@@ -42,13 +42,13 @@ def main(page: ft.Page):
             )
         
         if url.path == "/works":
-            a = gallery_page(page, uid)
+            gallery = GalleryPage(page, uid)
             # print(a, uid)
             page.views.clear()
             page.views.append(
                 ft.View(
                     "/works",
-                    controls=a
+                    controls=gallery.build_page()
                 )
             )
         page.update()

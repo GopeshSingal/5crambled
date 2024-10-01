@@ -1,7 +1,4 @@
 import flet as ft
-import flet.canvas as cv
-from firebase_admin import firestore
-from flet_contrib.color_picker import ColorPicker
 from firebase_utils import cloud_firestore
 from PIL import Image
 from urllib.parse import urlencode
@@ -19,17 +16,20 @@ def remove_local():
 
 button_style = ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10))
 
-def gallery_page(page: ft.Page, uid: str):
-    images = ft.GridView(
-        expand=1,
-        runs_count=5,
-        max_extent=150,
-        child_aspect_ratio=1.0,
-        spacing=5,
-        run_spacing=5,
-    )
+class GalleryPage:
+    def __init__(self, page: ft.Page, uid: str) -> None:
+        self.page = page
+        self.uid = uid
+        self.images = ft.GridView(
+            expand=1,
+            runs_count=5,
+            max_extent=150,
+            child_aspect_ratio=1.0,
+            spacing=5,
+            run_spacing=5,
+        )
 
-    def visualize_output_from_data(data, num, uid):
+    def visualize_output_from_data(self, data, num, uid):
         hex_array = data
         size = math.sqrt(len(hex_array))
         size_inc = 4
@@ -47,7 +47,7 @@ def gallery_page(page: ft.Page, uid: str):
         image.putdata(rgb_array)
         image.save(f'{directory}/output_{uid}_{num}.png')
         query_param = urlencode([('data', i) for i in data])
-        images.controls.append(
+        self.images.controls.append(
             ft.Container(
                 content=ft.Image(
                     src=os.path.abspath(f'{directory}/output_{uid}_{num}.png'),
@@ -55,56 +55,57 @@ def gallery_page(page: ft.Page, uid: str):
                     repeat=ft.ImageRepeat.NO_REPEAT,
                     border_radius=ft.border_radius.all(10),
                 ),
-                on_click=lambda _: page.go("/home", uid=uid, data=query_param)
+                on_click=lambda _: self.page.go("/home", uid=uid, data=query_param)
             )
         )
 
-    path = os.path.abspath(directory)
-    if os.path.exists(path):
-        shutil.rmtree(path)
-    os.mkdir(path)
+    def build_page(self):
+        path = os.path.abspath(directory)
+        if os.path.exists(path):
+            shutil.rmtree(path)
+        os.mkdir(path)
 
-    doc_ref = cloud_firestore.collection("users").document(uid)
-    image_ref = doc_ref.collection("images").stream()
-    count = 0
-    for doc in image_ref:
-        count += 1
-        image = doc.to_dict()
-        data = image["hex_array"]
-        visualize_output_from_data(data, count, uid)
+        doc_ref = cloud_firestore.collection("users").document(self.uid)
+        image_ref = doc_ref.collection("images").stream()
+        count = 0
+        for doc in image_ref:
+            count += 1
+            image = doc.to_dict()
+            data = image["hex_array"]
+            self.visualize_output_from_data(data, count, self.uid)
 
 
-    home_button = [
-        ft.IconButton(
-            icon=ft.icons.HOUSE_ROUNDED, 
-            icon_color=ft.colors.BLUE_GREY_700, 
-            icon_size=28, 
-            on_click=lambda _: page.go("/home", uid=uid)
-        )
-    ]
-
-    logout_button = [
-        ft.IconButton(
-            icon=ft.icons.LOGOUT_ROUNDED, 
-            icon_color=ft.colors.BLUE_GREY_700, 
-            icon_size=28, 
-            on_click=lambda _: page.go("/"))
-    ]
-    
-    return [
-            ft.AppBar(
-                leading=ft.Container(
-                    content=ft.Row(home_button), 
-                    padding=ft.padding.only(left=10)), 
-                title=ft.Text("Gallery"), 
-                center_title=True, 
-                bgcolor=ft.colors.SURFACE_VARIANT, 
-                actions=[
-                    ft.Container(
-                        content=ft.Row(logout_button),
-                        padding=ft.padding.only(right=10)
-                    )
-                ],
-            ),
-            images
+        home_button = [
+            ft.IconButton(
+                icon=ft.icons.HOUSE_ROUNDED, 
+                icon_color=ft.colors.BLUE_GREY_700, 
+                icon_size=28, 
+                on_click=lambda _: self.page.go("/home", uid=self.uid)
+            )
         ]
+
+        logout_button = [
+            ft.IconButton(
+                icon=ft.icons.LOGOUT_ROUNDED, 
+                icon_color=ft.colors.BLUE_GREY_700, 
+                icon_size=28, 
+                on_click=lambda _: self.page.go("/"))
+        ]
+        
+        return [
+                ft.AppBar(
+                    leading=ft.Container(
+                        content=ft.Row(home_button), 
+                        padding=ft.padding.only(left=10)), 
+                    title=ft.Text("Gallery"), 
+                    center_title=True, 
+                    bgcolor=ft.colors.SURFACE_VARIANT, 
+                    actions=[
+                        ft.Container(
+                            content=ft.Row(logout_button),
+                            padding=ft.padding.only(right=10)
+                        )
+                    ],
+                ),
+                self.images
+            ]

@@ -29,15 +29,21 @@ def gallery_page(page: ft.Page, uid: str):
         run_spacing=5,
     )
 
-    # def make_canvas(e, data):
-        
-    #     print("CLICKED\n", data)
-
     def visualize_output_from_data(data, num, uid):
         hex_array = data
         size = math.sqrt(len(hex_array))
-        rgb_array = [(int(hex_color[1:3], 16), int(hex_color[3:5], 16), int(hex_color[5:7], 16)) for hex_color in hex_array]
-        image = Image.new("RGB", ((int)(size), (int)(size)))
+        size_inc = 4
+        rgb_array = []
+        
+        for i in range(0, len(hex_array), int(size)):
+            row = hex_array[i:i+int(size)]
+            for _ in range(size_inc):
+                for hex_color in row:
+                    rgb_tuple = (int(hex_color[1:3], 16), int(hex_color[3:5], 16), int(hex_color[5:7], 16))
+                    extend_list = [rgb_tuple for _ in range(size_inc)]
+                    rgb_array.extend(extend_list)
+        
+        image = Image.new("RGB", ((int)(size*size_inc), (int)(size*size_inc)))
         image.putdata(rgb_array)
         image.save(f'{directory}/output_{uid}_{num}.png')
         query_param = urlencode([('data', i) for i in data])

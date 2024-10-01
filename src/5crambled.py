@@ -32,10 +32,11 @@ def main(page: ft.Page):
             )
         )
         if url.path == "/home":
+            hp = home_page(page, uid, data)
             page.views.append(
                 ft.View(
                     "/home",
-                    controls=home_page(page, uid, data)
+                    controls=hp.build_gui()
                 )
             )
         

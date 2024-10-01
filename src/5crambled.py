@@ -1,7 +1,7 @@
 import flet as ft
 
-from home import home_page
-from login import login_page
+from home import HomePage
+from login import LoginPage
 from gallery import gallery_page, remove_local
 from urllib.parse import urlparse, parse_qs
 
@@ -25,18 +25,19 @@ def main(page: ft.Page):
             data = None
 
         page.views.clear()
+        login = LoginPage(page)
         page.views.append(
             ft.View(
                 "/",
-                controls=login_page(page)
+                controls=login.build_page()
             )
         )
         if url.path == "/home":
-            hp = home_page(page, uid, data)
+            home = HomePage(page, uid, data)
             page.views.append(
                 ft.View(
                     "/home",
-                    controls=hp.build_gui()
+                    controls=home.build_page()
                 )
             )
         

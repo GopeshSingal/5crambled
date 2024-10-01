@@ -1,6 +1,6 @@
 import flet as ft
 
-class Color_palette:
+class ColorPalette:
     def __init__(self, page, color_picker):
         palette = []
         self.prev_button = None

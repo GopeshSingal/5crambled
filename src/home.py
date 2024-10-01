@@ -1,7 +1,7 @@
 import flet as ft
 import flet.canvas as cv
 from flet_contrib.color_picker import ColorPicker
-from color_palette import Color_palette
+from color_palette import ColorPalette
 from state import State
 from utils.button_handlers import handle_key, fill_button_clicked, dropper_button_clicked, reset_canvas
 from utils.upload_utils import Upload
@@ -12,7 +12,7 @@ ratio = canvas_size / grid_size
 
 button_style = ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10))
 
-class home_page:
+class HomePage:
     def __init__(self, page: ft.Page, uid: str, data: str | None):
         self.page = page
         self.uid = uid
@@ -102,8 +102,8 @@ class home_page:
         self.button_row.update()
         self.state.fill = False
 
-    def build_gui(self):
-        self.color_palette = Color_palette(self.page, self.color_picker)
+    def build_page(self):
+        self.color_palette = ColorPalette(self.page, self.color_picker)
         upload_obj = Upload(self.page, grid_size, self.cp, self.uid)
 
         color_col = ft.Container(
